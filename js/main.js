@@ -191,7 +191,6 @@ var toggleDisabled = function (flag) {
     for (var i = 0; i < fieldset.length; i++) {
       fieldset[i].setAttribute('disabled', '');
     }
-
   } else {
     for (var j = 0; j < fieldset.length; j++) {
       fieldset[j].removeAttribute('disabled');
@@ -211,31 +210,35 @@ var activePage = function () {
 };
 
 var showAds = function (evt) {
-  var pinsList = map.querySelectorAll('.map__pin');
-  for (var i = 1; i < pinsList.length; i++) {
-    if (pinsList[i] === evt.target.closest('.map__pin')) {
-      var clickedElement = parseInt(evt.target.closest('.map__pin').getAttribute('data-index'), 10);
-      hideAds();
-      renderCard(dataHotelArr[clickedElement]);
-      var popupClose = document.querySelector('.popup__close');
-      popupClose.addEventListener('click', hideAds);
-      document.addEventListener('keydown', hideAds);
+  if (evt.target.closest('.map__pin')) {
+    var clickedElement = parseInt(evt.target.closest('.map__pin').getAttribute('data-index'), 10);
+    if (isNaN(clickedElement)) {
       return;
     }
+    isShowAds();
+    renderCard(dataHotelArr[clickedElement]);
+    var popupClose = document.querySelector('.popup__close');
+    popupClose.addEventListener('click', hideAds);
+    document.addEventListener('keydown', hideAds);
+    return;
+  }
+};
+
+var isShowAds = function () {
+  var card = document.querySelector('.map__card');
+  if (card) {
+    card.remove();
   }
 };
 
 var hideAds = function (evt) {
-  var popupClose = document.querySelector('.popup__close');
   var card = document.querySelector('.map__card');
-  if (!card) {
-    return;
-  }
-  if (card || evt.keyCode === 27) {
+  var popupClose = document.querySelector('.popup__close');
+  if (evt.target.closest('.popup__close') || evt.keyCode === 27) {
     card.remove();
+    popupClose.removeEventListener('click', hideAds);
+    document.removeEventListener('keydown', hideAds);
   }
-  popupClose.removeEventListener('click', hideAds);
-  document.removeEventListener('keydown', hideAds);
 };
 
 var renderPins = function () {
