@@ -29,6 +29,13 @@ var TYPES = {
   FLAT: 'Кваритра'
 };
 var ESC_KEYCODE = 27;
+var CAPACITY_DEFAULT_INDEX = 2;
+var PriceOfType = {
+  BUNGALO: 0,
+  FLAT: 1000,
+  HOUSE: 5000,
+  PALACE: 10000
+};
 var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 };
@@ -192,6 +199,7 @@ var toggleDisabled = function (flag) {
     for (var i = 0; i < fieldset.length; i++) {
       fieldset[i].setAttribute('disabled', '');
     }
+    noticeForm.classList.add('ad-form--disabled');
   } else {
     for (var j = 0; j < fieldset.length; j++) {
       fieldset[j].removeAttribute('disabled');
@@ -259,20 +267,19 @@ var timein = noticeForm.querySelector('#timein');
 var timeout = noticeForm.querySelector('#timeout');
 
 var setPlaceholderAndMinPrice = function (minValue) {
-  price.value = '';
   price.placeholder = minValue;
   price.min = minValue;
 };
 
 var timingTypeAndPriceHousing = function () {
   if (typeHousing.value === 'bungalo') {
-    setPlaceholderAndMinPrice(0);
+    setPlaceholderAndMinPrice(PriceOfType.BUNGALO);
   } else if (typeHousing.value === 'flat') {
-    setPlaceholderAndMinPrice(1000);
+    setPlaceholderAndMinPrice(PriceOfType.FLAT);
   } else if (typeHousing.value === 'house') {
-    setPlaceholderAndMinPrice(5000);
+    setPlaceholderAndMinPrice(PriceOfType.HOUSE);
   } else if (typeHousing.value === 'palace') {
-    setPlaceholderAndMinPrice(10000);
+    setPlaceholderAndMinPrice(PriceOfType.PALACE);
   }
 };
 timingTypeAndPriceHousing();
@@ -315,17 +322,17 @@ var setTimeinAndTimeout = function (time) {
   timeout.value = time;
 };
 var timingTimeinAndTimeout = function (evt) {
-  if (evt.target.value === '12:00') {
-    setTimeinAndTimeout('12:00');
-  } else if (evt.target.value === '13:00') {
-    setTimeinAndTimeout('13:00');
-  } else if (evt.target.value === '14:00') {
-    setTimeinAndTimeout('14:00');
-  }
+  setTimeinAndTimeout(evt.target.value);
 };
 timein.addEventListener('input', timingTimeinAndTimeout);
 timeout.addEventListener('input', timingTimeinAndTimeout);
 
+var existSuccessForm = function () {
+  var success = document.querySelector('.success');
+  if (success) {
+    success.remove();
+  }
+};
 
 var hideSuccessForm = function (evt) {
   var success = document.querySelector('.success');
@@ -344,9 +351,40 @@ noticeForm.addEventListener('submit', function (evt) {
   var successForm = success.content.cloneNode(true);
   var main = document.querySelector('main');
 
+  existSuccessForm();
+
   main.appendChild(successForm);
 
   document.addEventListener('keydown', hideSuccessForm);
   document.addEventListener('mousedown', hideSuccessForm);
 });
 
+
+var resetForm = noticeForm.querySelector('.ad-form__reset');
+
+var removePins = function () {
+  var pins = document.querySelectorAll('.map__pin');
+  if (pins.length) {
+    for (var i = 1; i < pins.length; i++) {
+      pins[i].remove();
+    }
+  }
+};
+var removePopup = function () {
+  var popup = document.querySelector('.map__card');
+  if (popup !== null) {
+    popup.remove();
+  }
+};
+var deactivePage = function () {
+  noticeForm.reset();
+  capacity.options[capacity.options.selectedIndex].removeAttribute('selected');
+  capacity.options[CAPACITY_DEFAULT_INDEX].setAttribute('selected', '');
+  toggleDisabled(true);
+  removePopup();
+  removePins();
+  map.classList.add('map--faded');
+  pinMain.addEventListener('mouseup', renderPins);
+};
+
+resetForm.addEventListener('click', deactivePage);
