@@ -18,8 +18,8 @@ var MIN_Y = 130;
 var MAX_Y = 630;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
-var PIN_MAIN_WIDTH = 62;
-var PIN_MAIN_HEIGHT = 62;
+var PIN_MAIN_WIDTH = 65;
+var PIN_MAIN_HEIGHT = 65;
 var PIN_MAIN_X = 570;
 var PIN_MAIN_Y = 375;
 var TYPES = {
@@ -36,6 +36,7 @@ var PriceOfType = {
   HOUSE: 5000,
   PALACE: 10000
 };
+
 var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 };
@@ -188,7 +189,7 @@ var noticeForm = document.querySelector('.ad-form');
 var textCoords = function (x, y) {
   var addressNoticeForm = noticeForm.querySelector('#address');
   addressNoticeForm.setAttribute('disabled', '');
-  addressNoticeForm.value = (x + PIN_MAIN_WIDTH / 2) + ', ' + (y + PIN_MAIN_HEIGHT / 2);
+  addressNoticeForm.value = (x + PIN_MAIN_WIDTH / 2) + ', ' + (y + PIN_MAIN_HEIGHT);
 };
 
 var pinMain = document.querySelector('.map__pin--main');
@@ -213,9 +214,8 @@ toggleDisabled(true);
 
 var activePage = function () {
   map.classList.remove('map--faded');
-  getMapPins();
-  textCoords(PIN_MAIN_X, PIN_MAIN_Y);
   toggleDisabled(false);
+  pinMain.querySelector('mouseup', activePage);
 };
 
 var showAds = function (evt) {
@@ -250,14 +250,14 @@ var hideAds = function (evt) {
   }
 };
 
+textCoords(PIN_MAIN_X, PIN_MAIN_Y);
+
 var renderPins = function () {
-  activePage();
+  getMapPins();
   var pinsContainer = map.querySelector('.map__pins');
   pinsContainer.addEventListener('click', showAds);
   pinMain.removeEventListener('mouseup', renderPins);
 };
-
-pinMain.addEventListener('mouseup', renderPins);
 
 var numRooms = noticeForm.querySelector('#room_number');
 var capacity = noticeForm.querySelector('#capacity');
@@ -376,7 +376,61 @@ var deactivePage = function () {
   removePopup();
   removePins();
   map.classList.add('map--faded');
+  textCoords(PIN_MAIN_X, PIN_MAIN_Y);
   pinMain.addEventListener('mouseup', renderPins);
 };
 
 resetForm.addEventListener('click', deactivePage);
+
+var existPins = false;
+
+pinMain.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    var pinMainPositionY = pinMain.offsetTop - shift.y;
+    var pinMainPositionX = pinMain.offsetLeft - shift.x;
+
+    textCoords(pinMainPositionX, pinMainPositionY);
+
+    if ((pinMainPositionY > MIN_Y && pinMainPositionY < MAX_Y) && (pinMainPositionX > MIN_X && pinMainPositionX < MAX_X)) {
+      pinMain.style.top = pinMainPositionY + 'px';
+      pinMain.style.left = pinMainPositionX + 'px';
+    }
+
+
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  if (!existPins) {
+    pinMain.addEventListener('mouseup', activePage);
+    pinMain.addEventListener('mouseup', renderPins);
+    existPins = true;
+  }
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+});
