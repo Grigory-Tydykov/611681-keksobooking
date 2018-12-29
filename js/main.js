@@ -188,7 +188,7 @@ var noticeForm = document.querySelector('.ad-form');
 
 var textCoords = function (x, y) {
   var pinMainX = Math.floor(x + PIN_MAIN_WIDTH / 2);
-  var pinMainY = Math.floor(y + PIN_MAIN_Y);
+  var pinMainY = Math.floor(y + PIN_MAIN_HEIGHT);
   var addressNoticeForm = noticeForm.querySelector('#address');
   addressNoticeForm.setAttribute('disabled', '');
 
@@ -402,12 +402,14 @@ var getCoords = function (elem) {
 pinMain.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
 
-  var coords = getCoords(pinMain);
-  var shiftX = evt.pageX - coords.left;
-  var shiftY = evt.pageY - coords.top;
+  var coordsMap = getCoords(map);
+  var coordsPinMain = getCoords(pinMain);
+
+  var shiftX = evt.pageX - coordsPinMain.left + coordsMap.left;
+  var shiftY = evt.pageY - coordsPinMain.top;
+
 
   function moveAt(moveEvt) {
-
     var pinMainX = moveEvt.pageX - shiftX;
     var pinMainY = moveEvt.pageY - shiftY;
 
