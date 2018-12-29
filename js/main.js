@@ -19,7 +19,7 @@ var MAX_Y = 630;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 var PIN_MAIN_WIDTH = 65;
-var PIN_MAIN_HEIGHT = 65;
+var PIN_MAIN_HEIGHT = 84;
 var PIN_MAIN_X = 570;
 var PIN_MAIN_Y = 375;
 var TYPES = {
@@ -187,9 +187,12 @@ var renderCard = function (data) {
 var noticeForm = document.querySelector('.ad-form');
 
 var textCoords = function (x, y) {
+  var pinMainX = Math.floor(x + PIN_MAIN_WIDTH / 2);
+  var pinMainY = Math.floor(y + PIN_MAIN_Y);
   var addressNoticeForm = noticeForm.querySelector('#address');
   addressNoticeForm.setAttribute('disabled', '');
-  addressNoticeForm.value = (x + PIN_MAIN_WIDTH / 2) + ', ' + (y + PIN_MAIN_HEIGHT);
+
+  addressNoticeForm.value = pinMainX + ', ' + pinMainY;
 };
 
 var pinMain = document.querySelector('.map__pin--main');
@@ -215,7 +218,9 @@ toggleDisabled(true);
 var activePage = function () {
   map.classList.remove('map--faded');
   toggleDisabled(false);
-  pinMain.querySelector('mouseup', activePage);
+  getMapPins();
+  renderPins();
+  pinMain.removeEventListener('mouseup', activePage);
 };
 
 var showAds = function (evt) {
@@ -253,10 +258,8 @@ var hideAds = function (evt) {
 textCoords(PIN_MAIN_X, PIN_MAIN_Y);
 
 var renderPins = function () {
-  getMapPins();
   var pinsContainer = map.querySelector('.map__pins');
   pinsContainer.addEventListener('click', showAds);
-  pinMain.removeEventListener('mouseup', renderPins);
 };
 
 var numRooms = noticeForm.querySelector('#room_number');
@@ -368,6 +371,10 @@ var removePopup = function () {
     popup.remove();
   }
 };
+var setPositionPinMain = function (pinMainX, pinMainY) {
+  pinMain.style.left = pinMainX + 'px';
+  pinMain.style.top = pinMainY + 'px';
+};
 var deactivePage = function () {
   noticeForm.reset();
   capacity.options[capacity.options.selectedIndex].removeAttribute('selected');
@@ -376,61 +383,57 @@ var deactivePage = function () {
   removePopup();
   removePins();
   map.classList.add('map--faded');
+  setPositionPinMain(PIN_MAIN_X, PIN_MAIN_Y);
   textCoords(PIN_MAIN_X, PIN_MAIN_Y);
-  pinMain.addEventListener('mouseup', renderPins);
+  pinMain.addEventListener('mouseup', activePage);
 };
 
 resetForm.addEventListener('click', deactivePage);
 
-var existPins = false;
+var getCoords = function (elem) {
+  var box = elem.getBoundingClientRect();
+  return {
+    top: box.top + pageYOffset,
+    left: box.left + pageXOffset
+  };
+};
+
 
 pinMain.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
 
-  var startCoords = {
-    x: evt.clientX,
-    y: evt.clientY
-  };
+  var coords = getCoords(pinMain);
+  var shiftX = evt.pageX - coords.left;
+  var shiftY = evt.pageY - coords.top;
 
-  var onMouseMove = function (moveEvt) {
-    moveEvt.preventDefault();
+  function moveAt(moveEvt) {
 
-    var shift = {
-      x: startCoords.x - moveEvt.clientX,
-      y: startCoords.y - moveEvt.clientY
-    };
+    var pinMainX = moveEvt.pageX - shiftX;
+    var pinMainY = moveEvt.pageY - shiftY;
 
-    startCoords = {
-      x: moveEvt.clientX,
-      y: moveEvt.clientY
-    };
+    textCoords(pinMainX, pinMainY);
 
-    var pinMainPositionY = pinMain.offsetTop - shift.y;
-    var pinMainPositionX = pinMain.offsetLeft - shift.x;
-
-    textCoords(pinMainPositionX, pinMainPositionY);
-
-    if ((pinMainPositionY > MIN_Y && pinMainPositionY < MAX_Y) && (pinMainPositionX > MIN_X && pinMainPositionX < MAX_X)) {
-      pinMain.style.top = pinMainPositionY + 'px';
-      pinMain.style.left = pinMainPositionX + 'px';
+    if (pinMainY < MIN_Y) {
+      pinMainY = MIN_Y;
+    } if (pinMainY > MAX_Y) {
+      pinMainY = MAX_Y;
+    } if (pinMainX < MIN_X) {
+      pinMainX = MIN_X;
+    } if (pinMainX > MAX_X) {
+      pinMainX = MAX_X;
     }
-
-
-  };
-
-  var onMouseUp = function (upEvt) {
-    upEvt.preventDefault();
-
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
-  };
-
-  if (!existPins) {
-    pinMain.addEventListener('mouseup', activePage);
-    pinMain.addEventListener('mouseup', renderPins);
-    existPins = true;
+    setPositionPinMain(pinMainX, pinMainY);
   }
 
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseup', onMouseUp);
+  document.addEventListener('mousemove', moveAt);
+
+  function upAt() {
+    document.removeEventListener('mousemove', moveAt);
+    pinMain.removeEventListener('mouseup', upAt);
+  }
+
+  pinMain.addEventListener('mouseup', upAt);
 });
+
+pinMain.addEventListener('mouseup', activePage);
+
