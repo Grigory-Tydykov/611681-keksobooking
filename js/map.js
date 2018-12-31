@@ -107,7 +107,7 @@
 
       setPositionPinMain(pinMainPositionX, pinMainPositionY);
 
-      window.form.textCoords(pinMainX, pinMainY);
+      window.form.textCoords(pinMainPositionX, pinMainPositionY);
     }
 
     document.addEventListener('mousemove', moveAt);
