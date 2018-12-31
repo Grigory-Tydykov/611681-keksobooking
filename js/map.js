@@ -91,8 +91,6 @@
       var pinMainX = moveEvt.pageX - shiftX;
       var pinMainY = moveEvt.pageY - shiftY;
 
-      window.form.textCoords(pinMainX, pinMainY);
-
       var checkArea = function (position, axis) {
 
         var min = window.data['MIN_' + axis];
@@ -108,16 +106,18 @@
       var pinMainPositionY = checkArea(pinMainY, 'Y');
 
       setPositionPinMain(pinMainPositionX, pinMainPositionY);
+
+      window.form.textCoords(pinMainX, pinMainY);
     }
 
     document.addEventListener('mousemove', moveAt);
 
     function upAt() {
       document.removeEventListener('mousemove', moveAt);
-      pinMain.removeEventListener('mouseup', upAt);
+      document.removeEventListener('mouseup', upAt);
     }
 
-    pinMain.addEventListener('mouseup', upAt);
+    document.addEventListener('mouseup', upAt);
   });
 
   pinMain.addEventListener('mouseup', activePage);
