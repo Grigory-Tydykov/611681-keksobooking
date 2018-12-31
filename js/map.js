@@ -93,16 +93,21 @@
 
       window.form.textCoords(pinMainX, pinMainY);
 
-      if (pinMainY < window.data.MIN_Y) {
-        pinMainY = window.data.MIN_Y;
-      } if (pinMainY > window.data.MAX_Y) {
-        pinMainY = window.data.MAX_Y;
-      } if (pinMainX < window.data.MIN_X) {
-        pinMainX = window.data.MIN_X;
-      } if (pinMainX > window.data.MAX_X) {
-        pinMainX = window.data.MAX_X;
-      }
-      setPositionPinMain(pinMainX, pinMainY);
+      var checkArea = function (position, axis) {
+
+        var min = window.data['MIN_' + axis];
+        var max = window.data['MAX_' + axis];
+
+        position = position < min ? min : position;
+        position = position > max ? max : position;
+
+        return position;
+      };
+
+      var pinMainPositionX = checkArea(pinMainX, 'X');
+      var pinMainPositionY = checkArea(pinMainY, 'Y');
+
+      setPositionPinMain(pinMainPositionX, pinMainPositionY);
     }
 
     document.addEventListener('mousemove', moveAt);

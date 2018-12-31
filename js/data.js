@@ -98,6 +98,10 @@
 
   window.data = {
     dataHotelArr: dataHotelArr,
+    MIN_X: MIN_X,
+    MAX_X: MAX_X,
+    MIN_Y: MIN_Y,
+    MAX_Y: MAX_Y,
     PIN_WIDTH: PIN_WIDTH,
     PIN_HEIGHT: PIN_HEIGHT,
     PIN_MAIN_WIDTH: PIN_MAIN_WIDTH,
