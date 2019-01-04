@@ -49,9 +49,11 @@
       document.removeEventListener('keydown', hideAds);
     }
   };
-
+  var onError = function (msg) {
+    throw new Error(msg);
+  };
   var activePage = function () {
-    window.load(renderPinsOnMap);
+    window.loadData(renderPinsOnMap, onError);
     map.classList.remove('map--faded');
     window.form.toggleDisabled(false);
     handlerPins();
@@ -124,6 +126,7 @@
   window.map = {
     setPositionPinMain: setPositionPinMain,
     activePage: activePage,
-    renderPinsOnMap: renderPinsOnMap
+    renderPinsOnMap: renderPinsOnMap,
+    onError: onError
   };
 })();

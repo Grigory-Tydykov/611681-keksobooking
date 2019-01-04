@@ -10,11 +10,12 @@
   var timeout = noticeForm.querySelector('#timeout');
   var pinMain = document.querySelector('.map__pin--main');
   var map = document.querySelector('.map');
+  var addressNoticeForm = noticeForm.querySelector('#address');
 
   var textCoords = function (x, y) {
     var pinMainX = Math.floor(x + window.data.PIN_MAIN_WIDTH / 2);
     var pinMainY = Math.floor(y + window.data.PIN_MAIN_HEIGHT);
-    var addressNoticeForm = noticeForm.querySelector('#address');
+
     addressNoticeForm.setAttribute('disabled', '');
 
     addressNoticeForm.value = pinMainX + ', ' + pinMainY;
@@ -94,9 +95,9 @@
   var existSuccessAndErrorForm = function () {
     var success = document.querySelector('.success');
     var error = document.querySelector('.error');
-
     if (success) {
       success.remove();
+      addressNoticeForm.setAttribute('disabled', '');
       return;
     } else if (error) {
       error.remove();
@@ -137,14 +138,16 @@
 
     document.addEventListener('keydown', hideSuccessAndErrorForm);
     document.addEventListener('mousedown', hideSuccessAndErrorForm);
+
     errorButton.addEventListener('mousedown', function () {
-      window.upload(new FormData(noticeForm), onSuccess, onError);
+      window.uploadData(new FormData(noticeForm), onSuccess, onError);
     });
   };
 
   noticeForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    window.upload(new FormData(noticeForm), onSuccess, onError);
+    addressNoticeForm.removeAttribute('disabled');
+    window.uploadData(new FormData(noticeForm), onSuccess, onError);
   });
 
 
