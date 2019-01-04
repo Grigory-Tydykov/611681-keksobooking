@@ -91,36 +91,60 @@
   timein.addEventListener('input', timingTimeinAndTimeout);
   timeout.addEventListener('input', timingTimeinAndTimeout);
 
-  var existSuccessForm = function () {
+  var existSuccessAndErrorForm = function () {
     var success = document.querySelector('.success');
+    var error = document.querySelector('.error');
+
     if (success) {
       success.remove();
+      return;
+    } else if (error) {
+      error.remove();
+      return;
     }
   };
 
-  var hideSuccessForm = function (evt) {
-    var success = document.querySelector('.success');
-
+  var hideSuccessAndErrorForm = function (evt) {
     if (evt.keyCode === window.data.ESC_KEYCODE || evt.type === 'mousedown') {
-      success.remove();
-      document.removeEventListener('keydown', hideSuccessForm);
-      document.removeEventListener('mousedown', hideSuccessForm);
+      existSuccessAndErrorForm();
+      document.removeEventListener('keydown', hideSuccessAndErrorForm);
+      document.removeEventListener('mousedown', hideSuccessAndErrorForm);
     }
   };
-
-
-  noticeForm.addEventListener('submit', function (evt) {
-    evt.preventDefault();
+  var onSuccess = function () {
     var success = document.querySelector('#success');
     var successForm = success.content.cloneNode(true);
     var main = document.querySelector('main');
 
-    existSuccessForm();
+    existSuccessAndErrorForm();
 
     main.appendChild(successForm);
 
-    document.addEventListener('keydown', hideSuccessForm);
-    document.addEventListener('mousedown', hideSuccessForm);
+    document.addEventListener('keydown', hideSuccessAndErrorForm);
+    document.addEventListener('mousedown', hideSuccessAndErrorForm);
+  };
+
+  var onError = function () {
+    var error = document.querySelector('#error');
+    var errorForm = error.content.cloneNode(true);
+    var main = document.querySelector('main');
+
+    existSuccessAndErrorForm();
+
+    main.appendChild(errorForm);
+
+    var errorButton = document.querySelector('.error__button');
+
+    document.addEventListener('keydown', hideSuccessAndErrorForm);
+    document.addEventListener('mousedown', hideSuccessAndErrorForm);
+    errorButton.addEventListener('mousedown', function () {
+      window.upload(new FormData(noticeForm), onSuccess, onError);
+    });
+  };
+
+  noticeForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.upload(new FormData(noticeForm), onSuccess, onError);
   });
 
 

@@ -9,7 +9,6 @@
   window.form.toggleDisabled(true);
 
   var renderPinsOnMap = function () {
-
     var pinsOnMap = window.pin();
     mapPins.appendChild(pinsOnMap);
   };
@@ -52,9 +51,9 @@
   };
 
   var activePage = function () {
+    window.load(renderPinsOnMap);
     map.classList.remove('map--faded');
     window.form.toggleDisabled(false);
-    renderPinsOnMap();
     handlerPins();
     pinMain.removeEventListener('mouseup', activePage);
   };
@@ -124,6 +123,7 @@
 
   window.map = {
     setPositionPinMain: setPositionPinMain,
-    activePage: activePage
+    activePage: activePage,
+    renderPinsOnMap: renderPinsOnMap
   };
 })();
