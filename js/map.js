@@ -8,8 +8,8 @@
 
   window.form.toggleDisabled(true);
 
-  var renderPinsOnMap = function () {
-    var pinsOnMap = window.pin();
+  var renderPinsOnMap = function (data) {
+    var pinsOnMap = window.pin(data);
     mapPins.appendChild(pinsOnMap);
   };
 
@@ -19,11 +19,8 @@
   };
 
   var showAds = function (evt) {
-    if (evt.target.closest('.map__pin')) {
+    if (evt.target.closest('.map__pin') && !evt.target.closest('.map__pin--main')) {
       var clickedElement = parseInt(evt.target.closest('.map__pin').getAttribute('data-index'), 10);
-      if (isNaN(clickedElement)) {
-        return;
-      }
       isShowAds();
       renderCardOnMap(window.data.dataHotelArr[clickedElement]);
       var popupClose = document.querySelector('.popup__close');
