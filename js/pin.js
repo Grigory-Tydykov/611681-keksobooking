@@ -3,10 +3,12 @@
 (function () {
   var createPins = function (data) {
     var pin = document.querySelector('#pin');
-    var pinsContainer = [];
     var pins = document.createDocumentFragment();
 
     for (var i = 0; i < data.length; i++) {
+      if (i >= 5) {
+        break;
+      }
       var pinEl = pin.content.cloneNode(true);
       var pinBtn = pinEl.querySelector('.map__pin');
       var pinImg = pinEl.querySelector('img');
@@ -22,15 +24,8 @@
       pinImg.src = data[i].author.avatar;
       pinImg.alt = data[i].offer.title;
 
-      pinsContainer.push(pinEl);
+      pins.appendChild(pinEl);
     }
-
-    pinsContainer = pinsContainer.slice(0, 5);
-
-    for (var j = 0; j < pinsContainer.length; j++) {
-      pins.appendChild(pinsContainer[j]);
-    }
-
     return pins;
   };
   window.pin = createPins;

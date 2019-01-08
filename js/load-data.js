@@ -12,8 +12,9 @@
       if (xhr.status !== 200) {
         return onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
       }
-      window.data.dataHotelArr = xhr.response;
-      onSuccess(window.data.dataHotelArr);
+      window.data.hotelPins = xhr.response;
+      window.data.filtretedHotelPins = xhr.response;
+      onSuccess(window.data.hotelPins);
     });
 
     xhr.addEventListener('error', function () {
