@@ -150,31 +150,15 @@
     window.uploadData(new FormData(noticeForm), onSuccess, onError);
   });
 
-
   var resetForm = noticeForm.querySelector('.ad-form__reset');
-
-  var removePins = function () {
-    var pins = document.querySelectorAll('.map__pin');
-    if (pins.length) {
-      for (var i = 1; i < pins.length; i++) {
-        pins[i].remove();
-      }
-    }
-  };
-  var removePopup = function () {
-    var popup = document.querySelector('.map__card');
-    if (popup !== null) {
-      popup.remove();
-    }
-  };
 
   var deactivePage = function () {
     noticeForm.reset();
     capacity.options[capacity.options.selectedIndex].removeAttribute('selected');
     capacity.options[window.data.CAPACITY_DEFAULT_INDEX].setAttribute('selected', '');
     toggleDisabled(true);
-    removePopup();
-    removePins();
+    window.map.removePopup();
+    window.map.removePins();
     map.classList.add('map--faded');
     window.map.setPositionPinMain(window.data.PIN_MAIN_X, window.data.PIN_MAIN_Y);
     textCoords(window.data.PIN_MAIN_X, window.data.PIN_MAIN_Y);

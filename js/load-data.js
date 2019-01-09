@@ -11,10 +11,11 @@
     xhr.addEventListener('load', function () {
       if (xhr.status !== 200) {
         onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
-      } else {
-        window.data.dataHotelArr = xhr.response;
-        onSuccess();
+        return;
       }
+      window.data.hotelPins = xhr.response;
+      window.data.filtratedHotelPins = xhr.response;
+      onSuccess(window.data.hotelPins);
     });
 
     xhr.addEventListener('error', function () {

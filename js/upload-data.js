@@ -7,9 +7,9 @@
     xhr.addEventListener('load', function () {
       if (xhr.status !== 200) {
         window.map.onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
-      } else {
-        onSuccess();
+        return;
       }
+      onSuccess();
     });
 
     xhr.addEventListener('error', function () {

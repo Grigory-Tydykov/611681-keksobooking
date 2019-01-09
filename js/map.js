@@ -8,8 +8,8 @@
 
   window.form.toggleDisabled(true);
 
-  var renderPinsOnMap = function () {
-    var pinsOnMap = window.pin();
+  var renderPinsOnMap = function (data) {
+    var pinsOnMap = window.pin(data);
     mapPins.appendChild(pinsOnMap);
   };
 
@@ -19,13 +19,10 @@
   };
 
   var showAds = function (evt) {
-    if (evt.target.closest('.map__pin')) {
+    if (evt.target.closest('.map__pin') && !evt.target.closest('.map__pin--main')) {
       var clickedElement = parseInt(evt.target.closest('.map__pin').getAttribute('data-index'), 10);
-      if (isNaN(clickedElement)) {
-        return;
-      }
       isShowAds();
-      renderCardOnMap(window.data.dataHotelArr[clickedElement]);
+      renderCardOnMap(window.data.filtratedHotelPins[clickedElement]);
       var popupClose = document.querySelector('.popup__close');
       popupClose.addEventListener('click', hideAds);
       document.addEventListener('keydown', hideAds);
@@ -49,6 +46,25 @@
       document.removeEventListener('keydown', hideAds);
     }
   };
+
+  var removePins = function () {
+    var pinsOnMap = document.querySelector('.map__pins');
+    var containerPins = pinsOnMap.querySelectorAll('.map__pin');
+
+    Array.from(containerPins).forEach(function (item) {
+      if (!item.classList.contains('map__pin--main')) {
+        pinsOnMap.removeChild(item);
+      }
+    });
+  };
+
+  var removePopup = function () {
+    var popup = document.querySelector('.map__card');
+    if (popup !== null) {
+      popup.remove();
+    }
+  };
+
   var onError = function (msg) {
     throw new Error(msg);
   };
@@ -127,6 +143,8 @@
     setPositionPinMain: setPositionPinMain,
     activePage: activePage,
     renderPinsOnMap: renderPinsOnMap,
-    onError: onError
+    onError: onError,
+    removePins: removePins,
+    removePopup: removePopup
   };
 })();
