@@ -10,7 +10,8 @@
 
     xhr.addEventListener('load', function () {
       if (xhr.status !== 200) {
-        return onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
+        onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
+        return;
       }
       window.data.hotelPins = xhr.response;
       window.data.filtratedHotelPins = xhr.response;
