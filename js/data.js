@@ -24,7 +24,6 @@
     HOUSE: 5000,
     PALACE: 10000
   };
-  var ANY_TYPE_HOUSING = 'any';
 
   window.data = {
     MIN_X: MIN_X,
@@ -40,7 +39,6 @@
     TYPES: TYPES,
     ESC_KEYCODE: ESC_KEYCODE,
     CAPACITY_DEFAULT_INDEX: CAPACITY_DEFAULT_INDEX,
-    PriceOfType: PriceOfType,
-    ANY_TYPE_HOUSING: ANY_TYPE_HOUSING
+    PriceOfType: PriceOfType
   };
 })();

@@ -169,7 +169,7 @@
 
   window.form = {
     textCoords: textCoords,
-    toggleDisabled: toggleDisabled,
+    toggleDisabled: toggleDisabled
   };
 })();
 

@@ -22,7 +22,7 @@
     if (evt.target.closest('.map__pin') && !evt.target.closest('.map__pin--main')) {
       var clickedElement = parseInt(evt.target.closest('.map__pin').getAttribute('data-index'), 10);
       isShowAds();
-      renderCardOnMap(window.data.filtretedHotelPins[clickedElement]);
+      renderCardOnMap(window.data.filtratedHotelPins[clickedElement]);
       var popupClose = document.querySelector('.popup__close');
       popupClose.addEventListener('click', hideAds);
       document.addEventListener('keydown', hideAds);
