@@ -1,33 +1,103 @@
 'use strict';
 (function () {
   var filtersForm = document.querySelector('.map__filters');
-  var typeHousing = filtersForm.querySelector('#housing-type');
-  var TYPE_OF_HOUSE = null;
-  var filterTypeHousing = function (evt) {
-    if (evt.target.value === TYPE_OF_HOUSE) {
-      return;
+  var Filters = {
+    'housing-type': 'any',
+    'housing-price': 'any',
+    'housing-rooms': 'any',
+    'housing-guests': 'any'
+  };
+
+  var PriceRange = {
+    'middle': {
+      'from': 10000,
+      'to': 49999
+    },
+    'low': {
+      'from': 0,
+      'to': 9999
+    },
+    'high': {
+      'from': 50000,
+      'to': Infinity
     }
-    TYPE_OF_HOUSE = evt.target.value;
+  };
 
-    window.map.removePins();
+  var Features = {
+    'wifi': false,
+    'dishwasher': false,
+    'parking': false,
+    'washer': false,
+    'elevator': false,
+    'conditioner': false
+  };
 
-    var filtrated = function () {
+  var setFilters = function (evt) {
+    if (evt.target.name === 'features') {
+      Features[evt.target.value] = evt.target.checked;
+    } else {
+      Filters[evt.target.name] = evt.target.value;
+    }
+  };
+
+  var applyFilters = function () {
+    var filterOfType = function (item) {
+      return (
+        Filters['housing-type'] === 'any' ||
+        item.offer.type === Filters['housing-type']
+      );
+    };
+    var filterOfPrice = function (item) {
+      return (
+        Filters['housing-price'] === 'any' ||
+        item.offer.price >= PriceRange[Filters['housing-price']].from &&
+        item.offer.price <= PriceRange[Filters['housing-price']].to
+      );
+    };
+    var filterOfRooms = function (item) {
+      return (
+        Filters['housing-rooms'] === 'any' ||
+        item.offer.rooms === parseInt(Filters['housing-rooms'], 10)
+      );
+    };
+    var filterOfGuests = function (item) {
+      return (
+        Filters['housing-guests'] === 'any' ||
+        item.offer.guests === parseInt(Filters['housing-guests'], 10)
+      );
+    };
+    var filterOfFeatures = function (item) {
+      var result = true;
+      for (var key in Features) {
+        if (Features[key] && item.offer.features.indexOf(key) === -1) {
+          result = false;
+          break;
+        }
+      }
+      return result;
+    };
+
+    var filter = function () {
       return window.data.hotelPins.filter(function (item) {
         return (
-          TYPE_OF_HOUSE === 'any' ||
-          item.offer.type === TYPE_OF_HOUSE
+          filterOfType(item) &&
+          filterOfPrice(item) &&
+          filterOfRooms(item) &&
+          filterOfGuests(item) &&
+          filterOfFeatures(item)
         );
       });
     };
-
-    window.data.filtratedHotelPins = filtrated();
-
+    window.data.filtratedHotelPins = filter();
+    window.map.removePins();
     window.map.renderPinsOnMap(window.data.filtratedHotelPins);
   };
-  typeHousing.addEventListener('input', filterTypeHousing);
 
-  filtersForm.addEventListener('change', function () {
+  var chatterFn = window.utils.debounce(applyFilters);
 
+  filtersForm.addEventListener('change', function (evt) {
+    setFilters(evt);
+    chatterFn();
   });
 })();
 
