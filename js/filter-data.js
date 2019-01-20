@@ -1,7 +1,6 @@
 'use strict';
 (function () {
   var filtersForm = document.querySelector('.map__filters');
-  var DEBOUNCE_INTERVAL = 5000; // ms
   var Filters = {
     'housing-type': 'any',
     'housing-price': 'any',
@@ -33,28 +32,12 @@
     'conditioner': false
   };
 
-  var debounce = function (cb) {
-    var lastTimeout = null;
-
-    return function () {
-      var parameters = arguments;
-      if (lastTimeout) {
-        clearTimeout(lastTimeout);
-      }
-      lastTimeout = setTimeout(function () {
-        cb.apply(null, parameters);
-      }, DEBOUNCE_INTERVAL);
-    };
-  };
-
-
   var setFilters = function (evt) {
     if (evt.target.name === 'features') {
       Features[evt.target.value] = evt.target.checked;
     } else {
       Filters[evt.target.name] = evt.target.value;
     }
-    debounce(applyFilters)();
   };
 
   var applyFilters = function () {
@@ -110,6 +93,11 @@
     window.map.renderPinsOnMap(window.data.filtratedHotelPins);
   };
 
-  filtersForm.addEventListener('change', setFilters);
+  var chatterFn = window.utils.debounce(applyFilters);
+
+  filtersForm.addEventListener('change', function (evt) {
+    setFilters(evt);
+    chatterFn();
+  });
 })();
 
