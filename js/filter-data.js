@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   var filtersForm = document.querySelector('.map__filters');
   var Filters = {
@@ -96,6 +97,7 @@
   var chatterFn = window.utils.debounce(applyFilters);
 
   filtersForm.addEventListener('change', function (evt) {
+    window.map.removeCard();
     setFilters(evt);
     chatterFn();
   });

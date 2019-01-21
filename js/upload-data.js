@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   var URL = 'https://js.dump.academy/keksobooking';
   window.uploadData = function (data, onSuccess, onError) {

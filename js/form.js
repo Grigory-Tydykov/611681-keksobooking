@@ -36,7 +36,6 @@
       }
       noticeForm.classList.remove('ad-form--disabled');
     }
-
   };
 
   var setPlaceholderAndMinPrice = function (minValue) {
@@ -61,10 +60,7 @@
   };
 
   var timingNumRoomsAndGuests = function () {
-    capacity.value = numRooms.value;
-    if (numRooms.value === '100') {
-      capacity.value = '0';
-    }
+    capacity.value = numRooms.value === '100' ? '0' : numRooms.value;
     disabledNumRooms();
     for (var j = 0; j < capacity.options.length; j++) {
       if (capacity.value === '3' && j < 3) {
@@ -92,37 +88,51 @@
   timein.addEventListener('input', timingTimeinAndTimeout);
   timeout.addEventListener('input', timingTimeinAndTimeout);
 
-  var existSuccessAndErrorForm = function () {
+
+  var removeSuccessForm = function () {
     var success = document.querySelector('.success');
-    var error = document.querySelector('.error');
     if (success) {
       success.remove();
       addressNoticeForm.setAttribute('disabled', '');
       return;
-    } else if (error) {
+    }
+  };
+
+  var removeErrorForm = function () {
+    var error = document.querySelector('.error');
+    if (error) {
       error.remove();
       return;
     }
   };
 
-  var hideSuccessAndErrorForm = function (evt) {
-    if (evt.keyCode === window.data.ESC_KEYCODE || evt.type === 'mousedown') {
-      existSuccessAndErrorForm();
-      document.removeEventListener('keydown', hideSuccessAndErrorForm);
-      document.removeEventListener('mousedown', hideSuccessAndErrorForm);
+  var onFormHideMousedown = function (evt) {
+    if (evt.type === 'mousedown') {
+      removeSuccessForm();
+      removeErrorForm();
+      document.removeEventListener('mousedown', onFormHideMousedown);
     }
   };
+
+  var onFormHideKeydown = function (evt) {
+    if (evt.keyCode === window.data.ESC_KEYCODE) {
+      removeSuccessForm();
+      removeErrorForm();
+      document.removeEventListener('keydown', onFormHideKeydown);
+    }
+  };
+
   var onSuccess = function () {
     var success = document.querySelector('#success');
     var successForm = success.content.cloneNode(true);
     var main = document.querySelector('main');
 
-    existSuccessAndErrorForm();
+    removeSuccessForm();
 
     main.appendChild(successForm);
 
-    document.addEventListener('keydown', hideSuccessAndErrorForm);
-    document.addEventListener('mousedown', hideSuccessAndErrorForm);
+    document.addEventListener('keydown', onFormHideKeydown);
+    document.addEventListener('mousedown', onFormHideMousedown);
   };
 
   var onError = function () {
@@ -130,14 +140,14 @@
     var errorForm = error.content.cloneNode(true);
     var main = document.querySelector('main');
 
-    existSuccessAndErrorForm();
+    removeErrorForm();
 
     main.appendChild(errorForm);
 
     var errorButton = document.querySelector('.error__button');
 
-    document.addEventListener('keydown', hideSuccessAndErrorForm);
-    document.addEventListener('mousedown', hideSuccessAndErrorForm);
+    document.addEventListener('keydown', onFormHideKeydown);
+    document.addEventListener('mousedown', onFormHideMousedown);
 
     errorButton.addEventListener('mousedown', function () {
       window.uploadData(new FormData(noticeForm), onSuccess, onError);
@@ -152,20 +162,20 @@
 
   var resetForm = noticeForm.querySelector('.ad-form__reset');
 
-  var deactivePage = function () {
+  var onFormResetClick = function () {
     noticeForm.reset();
     capacity.options[capacity.options.selectedIndex].removeAttribute('selected');
     capacity.options[window.data.CAPACITY_DEFAULT_INDEX].setAttribute('selected', '');
     toggleDisabled(true);
-    window.map.removePopup();
+    window.map.removeCard();
     window.map.removePins();
     map.classList.add('map--faded');
     window.map.setPositionPinMain(window.data.PIN_MAIN_X, window.data.PIN_MAIN_Y);
     textCoords(window.data.PIN_MAIN_X, window.data.PIN_MAIN_Y);
-    pinMain.addEventListener('mouseup', window.map.activePage);
+    pinMain.addEventListener('mouseup', window.map.onPinMainClick);
   };
 
-  resetForm.addEventListener('click', deactivePage);
+  resetForm.addEventListener('click', onFormResetClick);
 
   window.form = {
     textCoords: textCoords,

@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   var MIN_X = 0;
   var MAX_X = 1134;

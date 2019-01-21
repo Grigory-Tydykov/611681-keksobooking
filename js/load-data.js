@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   var URL = 'https://js.dump.academy/keksobooking/data';
   window.loadData = function (onSuccess, onError) {
@@ -15,6 +16,7 @@
       }
       window.data.hotelPins = xhr.response;
       window.data.filtratedHotelPins = xhr.response;
+      window.map.toggleDisabledFiltrate(false);
       onSuccess(window.data.hotelPins);
     });
 
