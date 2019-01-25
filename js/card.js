@@ -15,48 +15,71 @@
     var cardElDescription = cardEl.querySelector('.popup__description');
     var cardElPhotos = cardEl.querySelector('.popup__photos');
     var cardElAvatar = cardEl.querySelector('.popup__avatar');
-    cardElTitle.textContent = data.offer.title;
-    cardElAddress.textContent = data.offer.address;
-    cardElPrice.textContent = data.offer.price + '₽/ночь';
 
-    cardElType.textContent = window.data.TYPES[data.offer.type.toUpperCase()];
-    cardElCapacity.textContent = data.offer.rooms + ' комнаты для ' + data.offer.guests + ' гостей';
-    cardElTime.textContent = 'Заезд после ' + data.offer.checkin + ', выезд до ' + data.offer.checkout;
+    var getFieldsCard = function (field, value, txt) {
+      if (value) {
+        txt = txt || '';
+        field.textContent = value + txt;
+        return;
+      }
+      field.textContent = '';
+    };
 
-    for (var i = 0; i < cardElFeatures.children.length; i++) {
-      cardElFeatures.children[i].style.display = 'none';
-    }
-    var getFeaturesElementLi = function () {
-      var list = data.offer.features;
-      for (var j = 0; j < list.length; j++) {
-        var li = document.createElement('li');
-        var classLi = 'popup__feature--' + list[j];
-        li.classList.add('popup__feature', classLi);
-        cardElFeatures.appendChild(li);
+    var getCapacityFieldCard = function (field, value1, value2, txt1, txt2) {
+      if (value1 && value2) {
+        field.textContent = value1 + txt1 + value2 + txt2;
+        return;
+      }
+      field.textContent = '';
+    };
+
+    var getTimeFieldCard = function (field, value1, value2, txt1, txt2) {
+      if (value1 && value2) {
+        field.textContent = txt1 + value1 + txt2 + value2;
+        return;
+      }
+      field.textContent = '';
+    };
+
+    var getFeaturesFieldCard = function (field, value) {
+      for (var i = 0; i < value.length; i++) {
+        var featuresClass = '.popup__feature--' + value[i];
+        var element = field.querySelector(featuresClass);
+        element.style.display = 'inline-block';
       }
     };
-    getFeaturesElementLi();
 
-    cardElDescription.textContent = data.offer.description;
-
-    for (var j = 0; j < cardElPhotos.children.length; j++) {
-      cardElPhotos.children[j].style.display = 'none';
-    }
-    var getPhotos = function () {
-      var homePhotos = data.offer.photos;
-      for (var k = 0; k < homePhotos.length; k++) {
+    var getPhotosFieldCard = function (field, value) {
+      for (var k = 0; k < value.length; k++) {
         var img = document.createElement('img');
         img.classList.add('popup__photo');
         img.width = '45';
         img.height = '40';
         img.alt = 'Фотография жилья';
-        img.src = homePhotos[k];
-        cardElPhotos.appendChild(img);
+        img.src = value[k];
+        field.appendChild(img);
       }
     };
-    getPhotos();
 
-    cardElAvatar.src = data.author.avatar;
+    var getAvatarFieldCard = function (field, value) {
+      if (value) {
+        field.src = value;
+        return;
+      }
+      field.src = '';
+    };
+
+    getFieldsCard(cardElTitle, data.offer.title);
+    getFieldsCard(cardElAddress, data.offer.address);
+    getFieldsCard(cardElPrice, data.offer.price, '₽/ночь');
+    getFieldsCard(cardElAddress, data.offer.address);
+    getFieldsCard(cardElType, window.data.TYPES[data.offer.type.toUpperCase()]);
+    getCapacityFieldCard(cardElCapacity, data.offer.rooms, data.offer.guests, ' команты для ', ' гостей');
+    getTimeFieldCard(cardElTime, data.offer.checkin, data.offer.checkout, 'Заезд после ', ', выезд до ');
+    getFeaturesFieldCard(cardElFeatures, data.offer.features);
+    getFieldsCard(cardElDescription, data.offer.description);
+    getPhotosFieldCard(cardElPhotos, data.offer.photos);
+    getAvatarFieldCard(cardElAvatar, data.author.avatar);
 
     var cardElTabIndex = cardEl.querySelector('.popup__close');
     cardElTabIndex.setAttribute('tabindex', '0');
@@ -65,5 +88,3 @@
   };
   window.card = createCard;
 })();
-
-

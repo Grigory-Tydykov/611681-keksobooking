@@ -1,6 +1,6 @@
 'use strict';
+
 (function () {
-  var filtersForm = document.querySelector('.map__filters');
   var Filters = {
     'housing-type': 'any',
     'housing-price': 'any',
@@ -35,6 +35,7 @@
   var setFilters = function (evt) {
     if (evt.target.name === 'features') {
       Features[evt.target.value] = evt.target.checked;
+      return;
     } else {
       Filters[evt.target.name] = evt.target.value;
     }
@@ -95,9 +96,9 @@
 
   var chatterFn = window.utils.debounce(applyFilters);
 
-  filtersForm.addEventListener('change', function (evt) {
+  window.data.mapFilters.addEventListener('change', function (evt) {
+    window.map.removeCard();
     setFilters(evt);
     chatterFn();
   });
 })();
-
