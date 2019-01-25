@@ -18,6 +18,7 @@
     FLAT: 'Кваритра'
   };
   var ESC_KEYCODE = 27;
+  var ENTER_KEYCODE = 13;
   var CAPACITY_DEFAULT_INDEX = 2;
   var PriceOfType = {
     BUNGALO: 0,
@@ -25,6 +26,14 @@
     HOUSE: 5000,
     PALACE: 10000
   };
+  var noticeForm = document.querySelector('.ad-form');
+  var map = document.querySelector('.map');
+  var pinMain = document.querySelector('.map__pin--main');
+  var mapFilters = document.querySelector('.map__filters');
+  var preview = document.querySelector('.ad-form-header__preview img');
+
+  var avatarFormSrc = preview.src;
+
 
   window.data = {
     MIN_X: MIN_X,
@@ -39,7 +48,14 @@
     PIN_MAIN_Y: PIN_MAIN_Y,
     TYPES: TYPES,
     ESC_KEYCODE: ESC_KEYCODE,
+    ENTER_KEYCODE: ENTER_KEYCODE,
     CAPACITY_DEFAULT_INDEX: CAPACITY_DEFAULT_INDEX,
-    PriceOfType: PriceOfType
+    PriceOfType: PriceOfType,
+    noticeForm: noticeForm,
+    map: map,
+    pinMain: pinMain,
+    mapFilters: mapFilters,
+    preview: preview,
+    avatarFormSrc: avatarFormSrc
   };
 })();

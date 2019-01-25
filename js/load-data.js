@@ -16,7 +16,7 @@
       }
       window.data.hotelPins = xhr.response;
       window.data.filtratedHotelPins = xhr.response;
-      window.map.toggleDisabledFiltrate(false);
+      window.utils.toggleDisabled(window.data.mapFilters, false);
       onSuccess(window.data.hotelPins);
     });
 

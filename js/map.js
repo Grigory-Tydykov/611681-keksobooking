@@ -2,26 +2,21 @@
 
 (function () {
   var mapPins = document.querySelector('.map__pins');
-  var map = document.querySelector('.map');
-  var mapFilterContainer = map.querySelector('.map__filters-container');
-  var pinMain = document.querySelector('.map__pin--main');
+  var mapFilterContainer = document.querySelector('.map__filters-container');
+  var mapFeatures = document.querySelector('.map__features');
 
-  window.form.toggleDisabled(true);
+  window.utils.toggleDisabled(window.data.noticeForm, true);
+  window.form.toggleClass(true);
+  window.utils.toggleDisabled(window.data.mapFilters, true);
 
-  var toggleDisabledFiltrate = function (flag) {
-    var mapFilters = mapFilterContainer.querySelector('.map__filters');
-    if (flag) {
-      for (var i = 0; i < mapFilters.children.length; i++) {
-        mapFilters.children[i].setAttribute('disabled', '');
-      }
-    } else {
-      for (var j = 0; j < mapFilters.children.length; j++) {
-        mapFilters.children[j].removeAttribute('disabled');
-      }
+  mapFeatures.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === window.data.ENTER_KEYCODE && !evt.target.checked) {
+      evt.target.checked = true;
+    } else if (evt.keyCode === window.data.ENTER_KEYCODE && evt.target.checked) {
+      evt.target.checked = false;
     }
-  };
+  });
 
-  toggleDisabledFiltrate(true);
 
   var renderPinsOnMap = function (data) {
     var pinsOnMap = window.pin(data);
@@ -30,7 +25,7 @@
 
   var renderCardOnMap = function (data) {
     var card = window.card(data);
-    map.insertBefore(card, mapFilterContainer);
+    window.data.map.insertBefore(card, mapFilterContainer);
   };
 
   var onCardShowClick = function (evt) {
@@ -68,11 +63,10 @@
   };
 
   var removePins = function () {
-    var pinsOnMap = document.querySelector('.map__pins');
-    var containerPins = pinsOnMap.querySelectorAll('.map__pin');
+    var containerPins = document.querySelectorAll('.map__pin');
     Array.from(containerPins).forEach(function (item) {
       if (!item.classList.contains('map__pin--main')) {
-        pinsOnMap.removeChild(item);
+        mapPins.removeChild(item);
       }
     });
   };
@@ -92,15 +86,15 @@
 
   var onPinMainClick = function () {
     window.loadData(renderPinsOnMap, onError);
-    map.classList.remove('map--faded');
-    window.form.toggleDisabled(false);
+    window.data.map.classList.remove('map--faded');
+    window.utils.toggleDisabled(window.data.noticeForm, false);
+    window.form.toggleClass(false);
     handlerPins();
-    pinMain.removeEventListener('mouseup', onPinMainClick);
+    window.data.pinMain.removeEventListener('mouseup', onPinMainClick);
   };
 
   var handlerPins = function () {
-    var pinsContainer = map.querySelector('.map__pins');
-    pinsContainer.addEventListener('click', onCardShowClick);
+    mapPins.addEventListener('click', onCardShowClick);
   };
 
   var getCoords = function (elem) {
@@ -112,15 +106,15 @@
   };
 
   var setPositionPinMain = function (pinMainX, pinMainY) {
-    pinMain.style.left = pinMainX + 'px';
-    pinMain.style.top = pinMainY + 'px';
+    window.data.pinMain.style.left = pinMainX + 'px';
+    window.data.pinMain.style.top = pinMainY + 'px';
   };
 
-  pinMain.addEventListener('mousedown', function (evt) {
+  window.data.pinMain.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
-    var coordsMap = getCoords(map);
-    var coordsPinMain = getCoords(pinMain);
+    var coordsMap = getCoords(window.data.map);
+    var coordsPinMain = getCoords(window.data.pinMain);
 
     var shiftX = evt.pageX - coordsPinMain.left + coordsMap.left;
     var shiftY = evt.pageY - coordsPinMain.top;
@@ -159,7 +153,7 @@
     document.addEventListener('mouseup', onPinMainMouseUp);
   });
 
-  pinMain.addEventListener('mouseup', onPinMainClick);
+  window.data.pinMain.addEventListener('mouseup', onPinMainClick);
 
   window.map = {
     setPositionPinMain: setPositionPinMain,
@@ -168,6 +162,5 @@
     onError: onError,
     removePins: removePins,
     removeCard: removeCard,
-    toggleDisabledFiltrate: toggleDisabledFiltrate
   };
 })();

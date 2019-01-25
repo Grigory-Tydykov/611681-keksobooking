@@ -1,41 +1,71 @@
 'use strict';
 
 (function () {
-  var noticeForm = document.querySelector('.ad-form');
-  var numRooms = noticeForm.querySelector('#room_number');
-  var capacity = noticeForm.querySelector('#capacity');
-  var typeHousing = noticeForm.querySelector('#type');
-  var price = noticeForm.querySelector('#price');
-  var timein = noticeForm.querySelector('#timein');
-  var timeout = noticeForm.querySelector('#timeout');
-  var pinMain = document.querySelector('.map__pin--main');
-  var map = document.querySelector('.map');
-  var addressNoticeForm = noticeForm.querySelector('#address');
+  var numRooms = document.querySelector('#room_number');
+  var capacity = document.querySelector('#capacity');
+  var typeHousing = document.querySelector('#type');
+  var price = document.querySelector('#price');
+  var timein = document.querySelector('#timein');
+  var timeout = document.querySelector('#timeout');
+  var address = document.querySelector('#address');
+  var resetForm = document.querySelector('.ad-form__reset');
+  var avatarFileSelect = document.querySelector('.ad-form-header__input');
+  var dropZone = document.querySelector('.ad-form-header__drop-zone');
+
+  var addAvatarForm = function (file) {
+    var reader = new FileReader();
+
+    reader.onloadend = function () {
+      window.data.preview.src = reader.result;
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      window.data.preview.src = '';
+    }
+  };
+
+  var onFileSelectChange = function () {
+    var file = document.querySelector('.ad-form-header__input').files[0];
+    addAvatarForm(file);
+  };
+  avatarFileSelect.addEventListener('change', onFileSelectChange);
+
+  var onFileSelectDrop = function (evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    var file = evt.dataTransfer.files[0];
+    addAvatarForm(file);
+  };
+
+  var onСaptureFileDragover = function (evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy';
+  };
+
+  dropZone.addEventListener('dragover', onСaptureFileDragover);
+  dropZone.addEventListener('drop', onFileSelectDrop);
 
   var textCoords = function (x, y) {
     var pinMainX = Math.floor(x + window.data.PIN_MAIN_WIDTH / 2);
     var pinMainY = Math.floor(y + window.data.PIN_MAIN_HEIGHT);
 
-    addressNoticeForm.setAttribute('disabled', '');
+    address.setAttribute('disabled', '');
 
-    addressNoticeForm.value = pinMainX + ', ' + pinMainY;
+    address.value = pinMainX + ', ' + pinMainY;
   };
 
   textCoords(window.data.PIN_MAIN_X, window.data.PIN_MAIN_Y);
 
-  var toggleDisabled = function (flag) {
-    var fieldset = noticeForm.querySelectorAll('.ad-form fieldset');
+  var toggleClass = function (flag) {
     if (flag) {
-      for (var i = 0; i < fieldset.length; i++) {
-        fieldset[i].setAttribute('disabled', '');
-      }
-      noticeForm.classList.add('ad-form--disabled');
-    } else {
-      for (var j = 0; j < fieldset.length; j++) {
-        fieldset[j].removeAttribute('disabled');
-      }
-      noticeForm.classList.remove('ad-form--disabled');
+      window.data.noticeForm.classList.add('ad-form--disabled');
+      return;
     }
+    window.data.noticeForm.classList.remove('ad-form--disabled');
   };
 
   var setPlaceholderAndMinPrice = function (minValue) {
@@ -93,7 +123,7 @@
     var success = document.querySelector('.success');
     if (success) {
       success.remove();
-      addressNoticeForm.setAttribute('disabled', '');
+      address.setAttribute('disabled', '');
       return;
     }
   };
@@ -126,11 +156,9 @@
     var success = document.querySelector('#success');
     var successForm = success.content.cloneNode(true);
     var main = document.querySelector('main');
-
     removeSuccessForm();
-
+    onFormResetClick();
     main.appendChild(successForm);
-
     document.addEventListener('keydown', onFormHideKeydown);
     document.addEventListener('mousedown', onFormHideMousedown);
   };
@@ -139,47 +167,40 @@
     var error = document.querySelector('#error');
     var errorForm = error.content.cloneNode(true);
     var main = document.querySelector('main');
-
     removeErrorForm();
-
     main.appendChild(errorForm);
-
     var errorButton = document.querySelector('.error__button');
-
     document.addEventListener('keydown', onFormHideKeydown);
     document.addEventListener('mousedown', onFormHideMousedown);
-
     errorButton.addEventListener('mousedown', function () {
-      window.uploadData(new FormData(noticeForm), onSuccess, onError);
+      window.uploadData(new FormData(window.data.noticeForm), onSuccess, onError);
     });
   };
 
-  noticeForm.addEventListener('submit', function (evt) {
+  window.data.noticeForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    addressNoticeForm.removeAttribute('disabled');
-    window.uploadData(new FormData(noticeForm), onSuccess, onError);
+    address.removeAttribute('disabled');
+    window.uploadData(new FormData(window.data.noticeForm), onSuccess, onError);
   });
 
-  var resetForm = noticeForm.querySelector('.ad-form__reset');
-
   var onFormResetClick = function () {
-    noticeForm.reset();
+    window.data.noticeForm.reset();
     capacity.options[capacity.options.selectedIndex].removeAttribute('selected');
     capacity.options[window.data.CAPACITY_DEFAULT_INDEX].setAttribute('selected', '');
-    toggleDisabled(true);
+    window.data.preview.src = window.data.avatarFormSrc;
+    window.utils.toggleDisabled(window.data.noticeForm, true);
     window.map.removeCard();
     window.map.removePins();
-    map.classList.add('map--faded');
+    window.data.map.classList.add('map--faded');
     window.map.setPositionPinMain(window.data.PIN_MAIN_X, window.data.PIN_MAIN_Y);
     textCoords(window.data.PIN_MAIN_X, window.data.PIN_MAIN_Y);
-    pinMain.addEventListener('mouseup', window.map.onPinMainClick);
+    window.data.pinMain.addEventListener('mouseup', window.map.onPinMainClick);
   };
 
   resetForm.addEventListener('click', onFormResetClick);
 
   window.form = {
     textCoords: textCoords,
-    toggleDisabled: toggleDisabled
+    toggleClass: toggleClass
   };
 })();
-
