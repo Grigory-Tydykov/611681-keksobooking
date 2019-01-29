@@ -1,12 +1,13 @@
 'use strict';
 
 (function () {
-  var createPins = function (data) {
-    var pin = document.querySelector('#pin');
+  var pin = document.querySelector('#pin');
+
+  window.createPins = function (data) {
     var pins = document.createDocumentFragment();
 
     for (var i = 0; i < data.length; i++) {
-      if (i >= 5) {
+      if (i >= window.data.PIN_LIMITS) {
         break;
       }
       var pinEl = pin.content.cloneNode(true);
@@ -28,6 +29,5 @@
     }
     return pins;
   };
-  window.pin = createPins;
 })();
 

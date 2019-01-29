@@ -11,7 +11,8 @@
   var PIN_MAIN_HEIGHT = 84;
   var PIN_MAIN_X = 570;
   var PIN_MAIN_Y = 375;
-  var TYPES = {
+  var PIN_LIMITS = 5;
+  var Types = {
     PALACE: 'Дворец',
     HOUSE: 'Дом',
     BUNGALO: 'Бунгало',
@@ -20,7 +21,8 @@
   var ESC_KEYCODE = 27;
   var ENTER_KEYCODE = 13;
   var CAPACITY_DEFAULT_INDEX = 2;
-  var PriceOfType = {
+  var PRICE_OF_TYPE_DEFAULT = 1000;
+  var PRICE_OF_TYPE = {
     BUNGALO: 0,
     FLAT: 1000,
     HOUSE: 5000,
@@ -30,10 +32,8 @@
   var map = document.querySelector('.map');
   var pinMain = document.querySelector('.map__pin--main');
   var mapFilters = document.querySelector('.map__filters');
-  var preview = document.querySelector('.ad-form-header__preview img');
-
-  var avatarFormSrc = preview.src;
-
+  var previewAvatar = document.querySelector('.ad-form-header__preview img');
+  var avatarFormSrc = previewAvatar.src;
 
   window.data = {
     MIN_X: MIN_X,
@@ -46,16 +46,18 @@
     PIN_MAIN_HEIGHT: PIN_MAIN_HEIGHT,
     PIN_MAIN_X: PIN_MAIN_X,
     PIN_MAIN_Y: PIN_MAIN_Y,
-    TYPES: TYPES,
+    PIN_LIMITS: PIN_LIMITS,
+    Types: Types,
     ESC_KEYCODE: ESC_KEYCODE,
     ENTER_KEYCODE: ENTER_KEYCODE,
     CAPACITY_DEFAULT_INDEX: CAPACITY_DEFAULT_INDEX,
-    PriceOfType: PriceOfType,
+    PRICE_OF_TYPE_DEFAULT: PRICE_OF_TYPE_DEFAULT,
+    PRICE_OF_TYPE: PRICE_OF_TYPE,
     noticeForm: noticeForm,
     map: map,
     pinMain: pinMain,
     mapFilters: mapFilters,
-    preview: preview,
-    avatarFormSrc: avatarFormSrc
+    previewAvatar: previewAvatar,
+    avatarFormSrc: avatarFormSrc,
   };
 })();

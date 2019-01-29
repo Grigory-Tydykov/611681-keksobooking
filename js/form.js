@@ -9,47 +9,12 @@
   var timeout = document.querySelector('#timeout');
   var address = document.querySelector('#address');
   var resetForm = document.querySelector('.ad-form__reset');
-  var avatarFileSelect = document.querySelector('.ad-form-header__input');
-  var dropZone = document.querySelector('.ad-form-header__drop-zone');
+  var success;
+  var error;
+  var main;
 
-  var addAvatarForm = function (file) {
-    var reader = new FileReader();
 
-    reader.onloadend = function () {
-      window.data.preview.src = reader.result;
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      window.data.preview.src = '';
-    }
-  };
-
-  var onFileSelectChange = function () {
-    var file = document.querySelector('.ad-form-header__input').files[0];
-    addAvatarForm(file);
-  };
-  avatarFileSelect.addEventListener('change', onFileSelectChange);
-
-  var onFileSelectDrop = function (evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-
-    var file = evt.dataTransfer.files[0];
-    addAvatarForm(file);
-  };
-
-  var onСaptureFileDragover = function (evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy';
-  };
-
-  dropZone.addEventListener('dragover', onСaptureFileDragover);
-  dropZone.addEventListener('drop', onFileSelectDrop);
-
-  var textCoords = function (x, y) {
+  var setTextCoords = function (x, y) {
     var pinMainX = Math.floor(x + window.data.PIN_MAIN_WIDTH / 2);
     var pinMainY = Math.floor(y + window.data.PIN_MAIN_HEIGHT);
 
@@ -58,26 +23,18 @@
     address.value = pinMainX + ', ' + pinMainY;
   };
 
-  textCoords(window.data.PIN_MAIN_X, window.data.PIN_MAIN_Y);
-
-  var toggleClass = function (flag) {
-    if (flag) {
-      window.data.noticeForm.classList.add('ad-form--disabled');
-      return;
-    }
-    window.data.noticeForm.classList.remove('ad-form--disabled');
-  };
+  setTextCoords(window.data.PIN_MAIN_X, window.data.PIN_MAIN_Y);
 
   var setPlaceholderAndMinPrice = function (minValue) {
     price.placeholder = minValue;
     price.min = minValue;
   };
 
-  var timingTypeAndPriceHousing = function (evt) {
-    setPlaceholderAndMinPrice(window.data.PriceOfType[evt.target.value.toUpperCase()]);
+  var onTypeHousingInput = function (evt) {
+    setPlaceholderAndMinPrice(window.data.PRICE_OF_TYPE[evt.target.value.toUpperCase()]);
   };
 
-  typeHousing.addEventListener('input', timingTypeAndPriceHousing);
+  typeHousing.addEventListener('input', onTypeHousingInput);
 
   var disabledNumRooms = function () {
     for (var i = 0; i < capacity.options.length; i++) {
@@ -89,7 +46,7 @@
     capacity.options[index].removeAttribute('disabled');
   };
 
-  var timingNumRoomsAndGuests = function () {
+  var onNumRoomsInput = function () {
     capacity.value = numRooms.value === '100' ? '0' : numRooms.value;
     disabledNumRooms();
     for (var j = 0; j < capacity.options.length; j++) {
@@ -105,43 +62,42 @@
     }
   };
 
-  timingNumRoomsAndGuests();
-  numRooms.addEventListener('input', timingNumRoomsAndGuests);
+  onNumRoomsInput();
+  numRooms.addEventListener('input', onNumRoomsInput);
 
   var setTimeinAndTimeout = function (time) {
     timein.value = time;
     timeout.value = time;
   };
-  var timingTimeinAndTimeout = function (evt) {
+  var onTimeinTimeoutFieldsInput = function (evt) {
     setTimeinAndTimeout(evt.target.value);
   };
-  timein.addEventListener('input', timingTimeinAndTimeout);
-  timeout.addEventListener('input', timingTimeinAndTimeout);
+  timein.addEventListener('input', onTimeinTimeoutFieldsInput);
+  timeout.addEventListener('input', onTimeinTimeoutFieldsInput);
 
 
   var removeSuccessForm = function () {
-    var success = document.querySelector('.success');
-    if (success) {
-      success.remove();
+    var successMessage = document.querySelector('.success');
+    if (successMessage) {
+      successMessage.remove();
       address.setAttribute('disabled', '');
       return;
     }
   };
 
   var removeErrorForm = function () {
-    var error = document.querySelector('.error');
-    if (error) {
-      error.remove();
+    var errorMessage = document.querySelector('.error');
+    if (errorMessage) {
+      errorMessage.remove();
       return;
     }
   };
 
-  var onFormHideMousedown = function (evt) {
-    if (evt.type === 'mousedown') {
-      removeSuccessForm();
-      removeErrorForm();
-      document.removeEventListener('mousedown', onFormHideMousedown);
-    }
+  var onFormHideClick = function () {
+    removeSuccessForm();
+    removeErrorForm();
+    document.removeEventListener('keydown', onFormHideKeydown);
+    document.removeEventListener('click', onFormHideClick);
   };
 
   var onFormHideKeydown = function (evt) {
@@ -149,58 +105,62 @@
       removeSuccessForm();
       removeErrorForm();
       document.removeEventListener('keydown', onFormHideKeydown);
+      document.addEventListener('click', onFormHideClick);
     }
   };
 
   var onSuccess = function () {
-    var success = document.querySelector('#success');
+    success = success ? success : document.querySelector('#success');
     var successForm = success.content.cloneNode(true);
-    var main = document.querySelector('main');
+    main = main ? main : document.querySelector('main');
     removeSuccessForm();
     onFormResetClick();
     main.appendChild(successForm);
     document.addEventListener('keydown', onFormHideKeydown);
-    document.addEventListener('mousedown', onFormHideMousedown);
+    document.addEventListener('click', onFormHideClick);
   };
 
   var onError = function () {
-    var error = document.querySelector('#error');
+    error = error ? error : document.querySelector('#error');
     var errorForm = error.content.cloneNode(true);
-    var main = document.querySelector('main');
+    main = main ? main : document.querySelector('main');
     removeErrorForm();
     main.appendChild(errorForm);
     var errorButton = document.querySelector('.error__button');
     document.addEventListener('keydown', onFormHideKeydown);
-    document.addEventListener('mousedown', onFormHideMousedown);
+    document.addEventListener('click', onFormHideClick);
     errorButton.addEventListener('mousedown', function () {
-      window.uploadData(new FormData(window.data.noticeForm), onSuccess, onError);
+      window.load.uploadData(new FormData(window.data.noticeForm));
     });
   };
 
   window.data.noticeForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
     address.removeAttribute('disabled');
-    window.uploadData(new FormData(window.data.noticeForm), onSuccess, onError);
+    window.load.uploadData(new FormData(window.data.noticeForm));
   });
 
   var onFormResetClick = function () {
     window.data.noticeForm.reset();
     capacity.options[capacity.options.selectedIndex].removeAttribute('selected');
     capacity.options[window.data.CAPACITY_DEFAULT_INDEX].setAttribute('selected', '');
-    window.data.preview.src = window.data.avatarFormSrc;
+    window.data.previewAvatar.src = window.data.avatarFormSrc;
     window.utils.toggleDisabled(window.data.noticeForm, true);
     window.map.removeCard();
     window.map.removePins();
     window.data.map.classList.add('map--faded');
+    window.data.noticeForm.classList.toggle('ad-form--disabled');
+    setPlaceholderAndMinPrice(window.data.PRICE_OF_TYPE_DEFAULT);
     window.map.setPositionPinMain(window.data.PIN_MAIN_X, window.data.PIN_MAIN_Y);
-    textCoords(window.data.PIN_MAIN_X, window.data.PIN_MAIN_Y);
-    window.data.pinMain.addEventListener('mouseup', window.map.onPinMainClick);
+    setTextCoords(window.data.PIN_MAIN_X, window.data.PIN_MAIN_Y);
+    window.data.pinMain.addEventListener('mouseup', window.map.onPinMainMouseup);
   };
 
   resetForm.addEventListener('click', onFormResetClick);
 
   window.form = {
-    textCoords: textCoords,
-    toggleClass: toggleClass
+    setTextCoords: setTextCoords,
+    onSuccess: onSuccess,
+    onError: onError
   };
 })();

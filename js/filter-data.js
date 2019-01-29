@@ -1,14 +1,14 @@
 'use strict';
 
 (function () {
-  var Filters = {
+  var filters = {
     'housing-type': 'any',
     'housing-price': 'any',
     'housing-rooms': 'any',
     'housing-guests': 'any'
   };
 
-  var PriceRange = {
+  var PRICE_RANGE = {
     'middle': {
       'from': 10000,
       'to': 49999
@@ -23,7 +23,7 @@
     }
   };
 
-  var Features = {
+  var features = {
     'wifi': false,
     'dishwasher': false,
     'parking': false,
@@ -34,43 +34,43 @@
 
   var setFilters = function (evt) {
     if (evt.target.name === 'features') {
-      Features[evt.target.value] = evt.target.checked;
+      features[evt.target.value] = evt.target.checked;
       return;
     } else {
-      Filters[evt.target.name] = evt.target.value;
+      filters[evt.target.name] = evt.target.value;
     }
   };
 
   var applyFilters = function () {
     var filterOfType = function (item) {
       return (
-        Filters['housing-type'] === 'any' ||
-        item.offer.type === Filters['housing-type']
+        filters['housing-type'] === 'any' ||
+        item.offer.type === filters['housing-type']
       );
     };
     var filterOfPrice = function (item) {
       return (
-        Filters['housing-price'] === 'any' ||
-        item.offer.price >= PriceRange[Filters['housing-price']].from &&
-        item.offer.price <= PriceRange[Filters['housing-price']].to
+        filters['housing-price'] === 'any' ||
+        item.offer.price >= PRICE_RANGE[filters['housing-price']].from &&
+        item.offer.price <= PRICE_RANGE[filters['housing-price']].to
       );
     };
     var filterOfRooms = function (item) {
       return (
-        Filters['housing-rooms'] === 'any' ||
-        item.offer.rooms === parseInt(Filters['housing-rooms'], 10)
+        filters['housing-rooms'] === 'any' ||
+        item.offer.rooms === parseInt(filters['housing-rooms'], 10)
       );
     };
     var filterOfGuests = function (item) {
       return (
-        Filters['housing-guests'] === 'any' ||
-        item.offer.guests === parseInt(Filters['housing-guests'], 10)
+        filters['housing-guests'] === 'any' ||
+        item.offer.guests === parseInt(filters['housing-guests'], 10)
       );
     };
     var filterOfFeatures = function (item) {
       var result = true;
-      for (var key in Features) {
-        if (Features[key] && item.offer.features.indexOf(key) === -1) {
+      for (var key in features) {
+        if (features[key] && item.offer.features.indexOf(key) === -1) {
           result = false;
           break;
         }

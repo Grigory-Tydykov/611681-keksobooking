@@ -6,7 +6,6 @@
   var mapFeatures = document.querySelector('.map__features');
 
   window.utils.toggleDisabled(window.data.noticeForm, true);
-  window.form.toggleClass(true);
   window.utils.toggleDisabled(window.data.mapFilters, true);
 
   mapFeatures.addEventListener('keydown', function (evt) {
@@ -17,14 +16,13 @@
     }
   });
 
-
   var renderPinsOnMap = function (data) {
-    var pinsOnMap = window.pin(data);
+    var pinsOnMap = window.createPins(data);
     mapPins.appendChild(pinsOnMap);
   };
 
   var renderCardOnMap = function (data) {
-    var card = window.card(data);
+    var card = window.createCard(data);
     window.data.map.insertBefore(card, mapFilterContainer);
   };
 
@@ -49,16 +47,19 @@
       card.remove();
       pinActive.classList.remove('map__pin--active');
       popupClose.removeEventListener('click', onCardHideClick);
+      document.removeEventListener('keydown', onCardHideKeyDown);
     }
   };
 
   var onCardHideKeyDown = function (evt) {
     var card = document.querySelector('.map__card');
+    var popupClose = document.querySelector('.popup__close');
     var pinActive = mapPins.querySelector('.map__pin--active');
     if (evt.keyCode === window.data.ESC_KEYCODE) {
       card.remove();
       pinActive.classList.remove('map__pin--active');
-      document.removeEventListener('keydown', onCardHideClick);
+      popupClose.removeEventListener('click', onCardHideClick);
+      document.removeEventListener('keydown', onCardHideKeyDown);
     }
   };
 
@@ -84,17 +85,13 @@
     throw new Error(msg);
   };
 
-  var onPinMainClick = function () {
-    window.loadData(renderPinsOnMap, onError);
+  var onPinMainMouseup = function () {
+    window.load.loadData();
     window.data.map.classList.remove('map--faded');
     window.utils.toggleDisabled(window.data.noticeForm, false);
-    window.form.toggleClass(false);
-    handlerPins();
-    window.data.pinMain.removeEventListener('mouseup', onPinMainClick);
-  };
-
-  var handlerPins = function () {
+    window.data.noticeForm.classList.toggle('ad-form--disabled');
     mapPins.addEventListener('click', onCardShowClick);
+    window.data.pinMain.removeEventListener('mouseup', onPinMainMouseup);
   };
 
   var getCoords = function (elem) {
@@ -140,7 +137,7 @@
 
       setPositionPinMain(pinMainPositionX, pinMainPositionY);
 
-      window.form.textCoords(pinMainPositionX, pinMainPositionY);
+      window.form.setTextCoords(pinMainPositionX, pinMainPositionY);
     };
 
     document.addEventListener('mousemove', onPinMainMouseMove);
@@ -153,11 +150,11 @@
     document.addEventListener('mouseup', onPinMainMouseUp);
   });
 
-  window.data.pinMain.addEventListener('mouseup', onPinMainClick);
+  window.data.pinMain.addEventListener('mouseup', onPinMainMouseup);
 
   window.map = {
     setPositionPinMain: setPositionPinMain,
-    onPinMainClick: onPinMainClick,
+    onPinMainMouseup: onPinMainMouseup,
     renderPinsOnMap: renderPinsOnMap,
     onError: onError,
     removePins: removePins,
