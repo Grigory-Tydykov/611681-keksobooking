@@ -105,7 +105,7 @@
       removeSuccessForm();
       removeErrorForm();
       document.removeEventListener('keydown', onFormHideKeydown);
-      document.addEventListener('click', onFormHideClick);
+      document.removeEventListener('click', onFormHideClick);
     }
   };
 
@@ -146,6 +146,8 @@
     capacity.options[window.data.CAPACITY_DEFAULT_INDEX].setAttribute('selected', '');
     window.data.previewAvatar.src = window.data.avatarFormSrc;
     window.utils.toggleDisabled(window.data.noticeForm, true);
+    window.utils.toggleDisabled(window.data.mapFilters, true);
+    window.avatar.removePhoto();
     window.map.removeCard();
     window.map.removePins();
     window.data.map.classList.add('map--faded');

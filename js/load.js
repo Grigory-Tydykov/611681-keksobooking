@@ -6,7 +6,7 @@
   var STATUS_SUCCESS = 200;
   var TIMEOUT = 30000;
 
-  var getPinsData = function (evt) {
+  var onPinMainLoad = function (evt) {
     var xhr = evt.currentTarget;
     if (xhr.status !== STATUS_SUCCESS) {
       window.map.onError('Cтатус ответа: ' + xhr.status + ' ' + xhr.statusText);
@@ -19,7 +19,7 @@
     return;
   };
 
-  var sendForm = function (evt) {
+  var onButtonFormLoad = function (evt) {
     var xhr = evt.currentTarget;
     if (xhr.status !== STATUS_SUCCESS) {
       window.form.onError();
@@ -58,10 +58,10 @@
   };
 
   function loadData() {
-    serverRequest('GET', URL_LOAD, getPinsData);
+    serverRequest('GET', URL_LOAD, onPinMainLoad);
   }
   function uploadData(data) {
-    serverRequest('POST', URL_UPLOAD, sendForm, data);
+    serverRequest('POST', URL_UPLOAD, onButtonFormLoad, data);
   }
   window.load = {
     loadData: loadData,

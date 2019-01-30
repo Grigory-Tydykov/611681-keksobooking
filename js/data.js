@@ -33,6 +33,7 @@
   var pinMain = document.querySelector('.map__pin--main');
   var mapFilters = document.querySelector('.map__filters');
   var previewAvatar = document.querySelector('.ad-form-header__preview img');
+  var previewPhoto = document.querySelector('.ad-form__photo');
   var avatarFormSrc = previewAvatar.src;
 
   window.data = {
@@ -59,5 +60,6 @@
     mapFilters: mapFilters,
     previewAvatar: previewAvatar,
     avatarFormSrc: avatarFormSrc,
+    previewPhoto: previewPhoto
   };
 })();
